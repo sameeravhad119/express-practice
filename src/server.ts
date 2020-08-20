@@ -1,22 +1,22 @@
 import * as express from "express";
 import * as mongoose from 'mongoose';
+import * as bodyParser from 'body-parser';
 import { getEnvironmentVariables } from "./environments/env";
-import UserRouter from "./routers/userRouter";
+import UserRouter from "./routers/user";
 
 export class Server {
     public app: express.Application = express();
 
     constructor() {
         this.setConfigurations();
-        this.setRoutes()
+        this.setRoutes();
+        this.error404Handler();
+        this.errorHandler();
     }
 
     setConfigurations = () => {
         this.setMongodb();
-    }
-
-    setRoutes = () => {
-        this.app.use('/api/user', UserRouter);
+        this.setBodyParser();
     }
 
     setMongodb = () => {
@@ -28,6 +28,31 @@ export class Server {
         ).then(() => {
             console.log('db is connected');
         });
+    }
+
+    setBodyParser = () => {
+        this.app.use(bodyParser.urlencoded({ extended: true }))
+    }
+
+    setRoutes = () => {
+        this.app.use('/api/user', UserRouter);
+    }
+
+    error404Handler = () => {
+        this.app.use((re, res, next) => {
+            res.send('Page Not found');
+        })
+    }
+
+    errorHandler = () => {
+        this.app.use((error, req, res, next) => {
+            let status_code = req.errorStatus;
+            let message = error.message;
+            res.json({
+                message: message,
+                status_code: status_code
+            })
+        })
     }
 
     listen = (port) => {
