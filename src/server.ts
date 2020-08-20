@@ -39,7 +39,7 @@ export class Server {
     }
 
     error404Handler = () => {
-        this.app.use((re, res, next) => {
+        this.app.use((req, res, next) => {
             res.send('Page Not found');
         })
     }

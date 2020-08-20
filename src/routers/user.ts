@@ -18,7 +18,7 @@ class UserRouter {
     }
 
     postRoutes = () => {
-
+        this.router.post('/signup', UserController.signup);
     }
 
     putRoutes = () => {
